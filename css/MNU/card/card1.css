@@ -1,0 +1,27 @@
+.password-wrapper {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 350px;
+    margin: auto;
+    text-align: center;
+}
+
+#passInput {
+    width: 90%;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+#passSubmit {
+    margin-top: 15px;
+    padding: 10px 25px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.message {
+    margin-top: 15px;
+    font-size: 14px;
+}
