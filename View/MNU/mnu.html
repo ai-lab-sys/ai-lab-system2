@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メニュー</title>
+    <link rel="stylesheet" href="../../css/MNU/mnu.css">
+</head>
+<body>
+
+    <header class="header">
+        <h1 class="logo">System Menu</h1>
+        <button class="logout-btn" id="logoutBtn">ログアウト</button>
+    </header>
+
+    <div class="menu-wrapper">
+
+        <div class="menu-grid">
+
+            <div class="menu-card" id="card1Btn">
+                <h2>カレンダー</h2>
+                <p>説明文が入ります</p>
+            </div>
+
+            <div class="menu-card" onclick="goPage('page2')">
+                <h2>画面②</h2>
+                <p>説明文が入ります</p>
+            </div>
+
+            <div class="menu-card" onclick="goPage('page3')">
+                <h2>画面③</h2>
+                <p>説明文が入ります</p>
+            </div>
+
+            <div class="menu-card" onclick="goPage('page4')">
+                <h2>画面④</h2>
+                <p>説明文が入ります</p>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- モーダル -->
+    <div id="modal" class="modal" style="display:none;">
+        <div class="modal-content" id="modalContent">
+            <!-- card1.htmlがここに読み込まれる -->
+        </div>
+    <span class="modal-close" id="modalClose">&times;</span>
+</div>
+
+    <script src="../../js/MNU/mnu.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #dfe9f3, #ffffff);
+}
+
+/* 中央の白いボックス */
+.signup-container {
+    background-color: #fff;
+    padding: 3rem;
+    border-radius: 0.8rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+    width: 30rem;      /* ← ログインと同じ幅にする */
+}
+
+/* タイトル */
+.signup-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* ラベル */
+.signup-container label {
+    display: block;
+    margin-top: 1rem;
+}
+
+/* 入力欄 */
+.signup-container input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 0.5rem;
+    box-sizing: border-box;
+}
+
+/* ボタン */
+.signup-container button {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 2rem;
+    background-color: #007BF0;
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+}
+
+/* リンク */
+.link {
+    text-decoration: none;
+    color: #007BF0;
+    font-size: 0.9rem;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.signup-container a {
+    display: inline-block;
+    margin-top: 0.8rem;
+}

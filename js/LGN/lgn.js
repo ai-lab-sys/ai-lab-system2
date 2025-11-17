@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 仮のログイン：あとでAPIに切り替え可能
         if (userId === "admin" && password === "1234") {
-            window.location.href = "../../contents/index.html";
+            window.location.href = "../MNU/mnu.html";
         } else {
             errorMessage.textContent = "ユーザーIDまたはパスワードが違います";
         }
