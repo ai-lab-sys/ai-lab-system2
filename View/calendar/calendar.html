@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カレンダー</title>
+    <link rel="stylesheet" href="../../css/calendar/calendar.css">
+</head>
+<body>
+
+<header class="header">
+    <h1>カレンダー</h1>
+</header>
+
+<div class="layout">
+    <!-- 左：カレンダー -->
+    <div class="calendar-area">
+        <div class="calendar-header">
+            <button id="prevMonthBtn" class="month-btn">＜</button>
+            <span id="currentMonth"></span>
+            <button id="nextMonthBtn" class="month-btn">＞</button>
+        </div>
+
+        <div id="calendar"></div>
+    </div>
+
+    <!-- 右：ユーザーリスト ＋ 予定登録欄 -->
+    <aside class="user-list">
+        <h2>個人カレンダー</h2>
+        <ul>
+            <li><a href="calendar_user1.html">user1</a></li>
+            <li><a href="calendar_user2.html">user2</a></li>
+        </ul>
+
+        <!-- メモ入力欄（右下ではなく右サイド内に固定） -->
+        <div class="memo-area" id="memoArea" style="display:none;">
+            <h2>予定登録</h2>
+
+            <!-- 複数イベントがある場合はここに選択肢が表示される -->
+            <div id="eventSelectorWrap" style="display:none;">
+                <label for="eventSelect">該当イベント：</label>
+                <select id="eventSelect"></select>
+            </div>
+
+            <label>カテゴリー：</label>
+            <select id="category">
+                <option value="遊び">遊び</option>
+                <option value="仕事">仕事</option>
+                <option value="誕生日">誕生日</option>
+                <option value="プライベート">プライベート</option>
+                <option value="その他">その他</option>
+            </select>
+
+            <div style="margin-top:8px;">
+                <label>期間：</label><br>
+                <input type="date" id="dateFrom"> 〜 
+                <input type="date" id="dateTo">
+            </div>
+
+            <div style="margin-top:8px;">
+                <label>メモ：</label><br>
+                <textarea id="memoText" rows="4"></textarea>
+            </div>
+
+            <div class="btn-row" style="margin-top:8px;">
+                <button id="saveBtn">登録</button>
+                <button id="editBtn" disabled>編集</button>
+                <button id="deleteBtn" disabled>削除</button>
+                <button id="closeBtn">閉じる</button>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<script src="../../js/calendar/calendar.js"></script>
+</body>
+</html>

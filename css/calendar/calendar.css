@@ -1,0 +1,155 @@
+/* 基本 */
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    color: #222;
+    background: #fff;
+}
+
+.header {
+    background: #333;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+}
+
+/* レイアウト */
+.layout {
+    display: flex;
+    height: calc(100vh - 60px);
+}
+
+.calendar-area {
+    flex: 8;
+    padding: 12px;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-list {
+    flex: 2;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 月切替 */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.current-month { font-size: 18px; font-weight: 600; }
+.month-btn { padding: 6px 10px; cursor: pointer; }
+
+/* カレンダー本体 */
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+/* 曜日 */
+.weekday {
+    text-align: center;
+    font-weight: 700;
+    padding: 8px 6px;
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+/* 日セル */
+.day {
+    min-height: 72px;
+    padding: 6px;
+    padding-top: 8px;
+    text-align: left;
+    border: 1px solid #e9e9e9;
+    border-radius: 6px;
+    background: #fff;
+    position: relative;
+    overflow: visible; /* bar がはみ出すことを許可 */
+}
+
+/* 日付番号（右上） */
+.day-number {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    font-weight: 600;
+}
+
+/* 休日色 */
+.sunday { color: red; }
+.saturday { color: blue; }
+
+/* 前月/翌月 */
+.disabled-day {
+    color: #bbb;
+    background: #fafafa;
+}
+
+/* --- イベント帯（bar-strip） --- */
+/* ベース */
+.bar-strip {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    height: 18px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    font-size: 12px;
+    color: #111;
+    padding-left: 6px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06) inset;
+}
+
+/* ラベルはstrip内左側に出る（開始セルのみ） */
+.bar-strip .label {
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* カテゴリ色（デフォルト） */
+.bar-play  { background: rgba(102,197,254,0.28); } /* 遊び（水色） */
+.bar-work  { background: rgba(247,199,82,0.28); }  /* 仕事（黄） */
+.bar-bday  { background: rgba(255,153,153,0.28); } /* 誕生日（赤） */
+.bar-private{ background: rgba(178,216,160,0.28);} /* プライベート（緑） */
+.bar-other { background: rgba(200,200,200,0.28); } /* その他（グレー） */
+
+/* 文字の濃いラベル背景（小さいラベル） */
+.bar-strip .label {
+    margin-right: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.6);
+}
+
+/* メモ入力欄（右サイド） */
+.memo-area {
+    margin-top: auto;
+    padding: 12px;
+    background: #fff;
+    border-top: 2px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+}
+
+/* ボタン行 */
+.btn-row { display:flex; gap:8px; margin-top:8px; }
+.btn-row button { padding:6px 10px; cursor:pointer; }
+
+/* レスポンシブ */
+@media (max-width: 900px) {
+    .layout { flex-direction: column; height: auto; }
+    .calendar-area, .user-list { width: 100%; flex: none; }
+}
