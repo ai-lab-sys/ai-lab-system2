@@ -110,8 +110,8 @@ function renderCalendar(year, month) {
             const dd = `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
             cell.setAttribute("data-date", dd);
 
-            // クリックでメモ欄開く（その日を含むイベントがあれば一覧表示）
-            cell.addEventListener("click", () => onDateClick(dd));
+            // クリックでメモ欄開く（横バー以外で新規登録）
+            cell.addEventListener("click", (e) => onDateClick(dd, e));
 
             day++;
         }
@@ -150,59 +150,30 @@ function nextMonth() {
 }
 
 // 日クリック
-function onDateClick(dateStr) {
+function onDateClick(dateStr, event) {
+    // 横バーまたはラベルをクリックした場合は既存イベント表示
+    const target = event.target;
+    if (target.classList.contains("bar-strip") || target.classList.contains("label")) {
+        return; // 横バークリックは無視（js②で処理）
+    }
+
     // show memo area
     showMemoArea();
 
-    // find events that cover this date (across all events)
-    const events = loadEvents();
-    const cellDate = new Date(dateStr);
-    cellDate.setHours(12,0,0,0);
-
-    const matches = events
-        .map((ev, idx) => ({ ev, idx }))
-        .filter(o => {
-            const from = new Date(o.ev.from); from.setHours(0,0,0,0);
-            const to   = new Date(o.ev.to);   to.setHours(23,59,59,999);
-            return cellDate.getTime() >= from.getTime() && cellDate.getTime() <= to.getTime();
-        });
-
+    // 新規入力モード
     const selectorWrap = document.getElementById("eventSelectorWrap");
-    const eventSelect = document.getElementById("eventSelect");
+    selectorWrap.style.display = "none";
+    selectedEventId = null;
+    editMode = false;
+    setMemoFieldsEnabled(true);
 
-    if (matches.length === 0) {
-        // 新規入力モード
-        selectorWrap.style.display = "none";
-        selectedEventId = null;
-        editMode = false;
-        setMemoFieldsEnabled(true);
-        document.getElementById("dateFrom").value = dateStr;
-        document.getElementById("dateTo").value = dateStr;
-        document.getElementById("category").value = "遊び";
-        document.getElementById("memoText").value = "";
-        document.getElementById("saveBtn").disabled = false;
-        document.getElementById("editBtn").disabled = true;
-        document.getElementById("deleteBtn").disabled = true;
-    } else {
-        // 表示モード：イベント一覧をselectに入れて最初のを表示
-        selectorWrap.style.display = "block";
-        eventSelect.innerHTML = "";
-        matches.forEach((m, i) => {
-            const opt = document.createElement("option");
-            opt.value = m.ev.id;
-            opt.textContent = `${m.ev.category} ${m.ev.from}→${m.ev.to}`;
-            eventSelect.appendChild(opt);
-        });
-
-        // load first
-        eventSelect.selectedIndex = 0;
-        loadEventById(eventSelect.value);
-        // ensure fields are readonly until edit pressed
-        setMemoFieldsEnabled(false);
-        document.getElementById("saveBtn").disabled = true;
-        document.getElementById("editBtn").disabled = false;
-        document.getElementById("deleteBtn").disabled = false;
-    }
+    document.getElementById("dateFrom").value = dateStr;
+    document.getElementById("dateTo").value = dateStr;
+    document.getElementById("category").value = "遊び";
+    document.getElementById("memoText").value = "";
+    document.getElementById("saveBtn").disabled = false;
+    document.getElementById("editBtn").disabled = true;
+    document.getElementById("deleteBtn").disabled = true;
 }
 
 // show/hide memo area
@@ -241,7 +212,6 @@ function loadEventById(id) {
     document.getElementById("dateTo").value = ev.to;
     document.getElementById("category").value = ev.category;
     document.getElementById("memoText").value = ev.memo || "";
-    // read-only until edit pressed
     setMemoFieldsEnabled(false);
     editMode = false;
     document.getElementById("saveBtn").disabled = true;
@@ -271,7 +241,6 @@ function onSave() {
             events[idx].to = to;
             events[idx].category = category;
             events[idx].memo = memo;
-            // keep id
         } else {
             alert("編集対象が見つかりません。");
             return;
@@ -280,14 +249,11 @@ function onSave() {
         // 新規追加（idを付与）
         const ev = { id: uid(), from, to, category, memo, createdAt: Date.now() };
         events.push(ev);
-        // 選択状態にする（新しいイベントを選べるように）
         selectedEventId = ev.id;
     }
 
     saveEvents(events);
     editMode = false;
-
-    // 保存後は閲覧モード（読み取り専用）にする
     setMemoFieldsEnabled(false);
     document.getElementById("saveBtn").disabled = true;
     document.getElementById("editBtn").disabled = false;
@@ -296,6 +262,9 @@ function onSave() {
     renderCalendar(currentYear, currentMonth);
 }
 
+
+
+//js②
 // 編集ボタン
 function onEdit() {
     if (!selectedEventId) {
@@ -330,42 +299,42 @@ function onDelete() {
 function renderBars() {
     const events = loadEvents(); // 配列（登録順に保持）
 
-    // まず既存の bar-strip を消す（全セル）
+    // 各イベントに stackIndex を付与（登録順＝縦位置）
+    events.forEach((ev, idx) => ev.stackIndex = idx);
+
+    // 既存の bar-strip を削除
     const cells = Array.from(document.querySelectorAll("#calendar .day"));
     cells.forEach(cell => {
-        // remove previous strips
         const strips = Array.from(cell.querySelectorAll(".bar-strip"));
         strips.forEach(s => s.remove());
     });
 
     if (!events || events.length === 0) return;
 
-    // For each cell, we will iterate events in original order and add strips for events that include that date.
     cells.forEach(cell => {
         const dateStr = cell.getAttribute("data-date");
         if (!dateStr) return;
         const cDate = new Date(dateStr); cDate.setHours(12,0,0,0);
 
-        // counter to compute vertical offset (number of earlier events covering this date)
-        let overlapCount = 0;
-
-        // iterate events in stored order -> older first
-        events.forEach((ev, evIndex) => {
+        events.forEach((ev) => {
             const from = new Date(ev.from); from.setHours(0,0,0,0);
             const to   = new Date(ev.to);   to.setHours(23,59,59,999);
 
             if (cDate.getTime() >= from.getTime() && cDate.getTime() <= to.getTime()) {
-                // this event covers the cell date -> create a strip
                 const strip = document.createElement("div");
                 strip.className = "bar-strip";
 
-                // add category color class
+                // カテゴリ色
                 const cls = CATEGORY_COLORS[ev.category] || "bar-other";
                 strip.classList.add(cls);
 
-                // vertical position: base 6px + overlapCount * (height+4)
-                const top = 6 + overlapCount * 22; // 18px height + 4px gap
+                // stackIndex に基づく固定の縦位置
+                const top = 6 + ev.stackIndex * 22;
                 strip.style.top = top + "px";
+
+                // ★ホバーで「期間＋メモ」を表示
+                const memoText = ev.memo ? `\nメモ: ${ev.memo}` : "";
+                strip.title = `期間: ${ev.from} → ${ev.to}${memoText}`;
 
                 // label only if this cell is the start date of the event
                 const fromNorm = new Date(ev.from); fromNorm.setHours(0,0,0,0);
@@ -381,10 +350,8 @@ function renderBars() {
                     // clicking on the label should load this event for editing/view
                     lbl.style.cursor = "pointer";
                     lbl.addEventListener("click", (e) => {
-                        // prevent cell click bubbling
                         e.stopPropagation();
                         selectedEventId = ev.id;
-                        // populate selector and fields
                         document.getElementById("eventSelectorWrap").style.display = "block";
                         const sel = document.getElementById("eventSelect");
                         sel.innerHTML = "";
@@ -397,7 +364,6 @@ function renderBars() {
                     });
                 }
 
-                // clicking a strip will also load the event
                 strip.addEventListener("click", (e) => {
                     e.stopPropagation();
                     selectedEventId = ev.id;
@@ -406,17 +372,25 @@ function renderBars() {
                 });
 
                 cell.appendChild(strip);
-
-                overlapCount++; // next overlapping event shifts down
             }
         });
 
-        // if many overlaps push cell min-height to accommodate
-        if (overlapCount > 0) {
-            const needed = 6 + overlapCount * 22 + 6; // top + stacks + bottom margin
+        // セル高さを stackIndex に合わせる
+        const maxStackIndex = events.reduce((max, ev) => {
+            const from = new Date(ev.from); from.setHours(0,0,0,0);
+            const to   = new Date(ev.to);   to.setHours(23,59,59,999);
+            return (cDate.getTime() >= from.getTime() && cDate.getTime() <= to.getTime())
+                ? Math.max(max, ev.stackIndex)
+                : max;
+        }, -1);
+
+        if (maxStackIndex >= 0) {
+            const needed = 6 + (maxStackIndex + 1) * 22 + 6;
             cell.style.minHeight = Math.max(72, needed + 28) + "px";
         } else {
             cell.style.minHeight = "";
         }
     });
 }
+
+
