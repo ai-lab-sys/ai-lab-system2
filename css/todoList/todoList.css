@@ -1,0 +1,79 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #fafafa;
+}
+
+.header {
+    background: #333;
+    color: #fff;
+    padding: 14px;
+    text-align: center;
+}
+
+.container {
+    padding: 20px;
+}
+
+/* ▼ タスク入力フォーム */
+.task-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.task-form input, .task-form button {
+    padding: 8px;
+    font-size: 14px;
+}
+
+.important-check {
+    display: flex;
+    align-items: center;
+}
+
+/* ▼ タブ */
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.tab-btn {
+    padding: 8px 14px;
+    border: 1px solid #aaa;
+    background: #eee;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #fff;
+    border-bottom: 2px solid #333;
+}
+
+/* ▼ タブ内容 */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ▼ テーブル */
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.task-table th,
+.task-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.task-table th {
+    background: #f0f0f0;
+}

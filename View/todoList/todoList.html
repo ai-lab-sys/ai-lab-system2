@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="../../css/todoList/todoList.css">
+</head>
+<body>
+
+<header class="header">
+    <h1>ToDo List</h1>
+</header>
+
+<div class="container">
+
+    <!-- ▼ タスク追加フォーム -->
+    <div class="task-form">
+        <input type="text" id="taskName" placeholder="タスク名">
+
+        <input type="date" id="deadline">
+
+        <label class="important-check">
+            <input type="checkbox" id="isImportant"> 重要
+        </label>
+
+        <input type="text" id="taskMemo" placeholder="備考">
+
+        <button id="addTaskBtn">追加</button>
+    </div>
+
+    <!-- ▼ タブ -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="working">作業中タスク</button>
+        <button class="tab-btn" data-tab="done">完了タスク</button>
+    </div>
+
+    <!-- ▼ 作業中タスク -->
+    <div id="working" class="tab-content active">
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>タスク名</th>
+                    <th>登録日～期限</th>
+                    <th>重要度</th>
+                    <th>作業状況</th>
+                    <th>備考</th>
+                    <th>サブタスク</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="workingBody"></tbody>
+        </table>
+    </div>
+
+    <!-- ▼ 完了タスク -->
+    <div id="done" class="tab-content">
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>タスク名</th>
+                    <th>登録日～期限</th>
+                    <th>重要度</th>
+                    <th>作業状況</th>
+                    <th>備考</th>
+                    <th>サブタスク</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="doneBody"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="../../js/todoList/todoList.js"></script>
+</body>
+</html>
