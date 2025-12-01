@@ -1,13 +1,14 @@
 body {
     margin: 0;
-    font-family: "Segoe UI", sans-serif;
-    background: #fafafa;
+    font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    color: #222;
+    background: #fff;
 }
 
 .header {
-    background: #333;
+    background: linear-gradient(135deg, #6a85b6, #bac8e0);
     color: #fff;
-    padding: 14px;
+    padding: 12px;
     text-align: center;
 }
 
@@ -21,6 +22,9 @@ body {
     gap: 10px;
     margin-bottom: 20px;
     flex-wrap: wrap;
+}
+.task-Name{
+    width: 500px;
 }
 
 .task-form input, .task-form button {
@@ -76,4 +80,40 @@ body {
 
 .task-table th {
     background: #f0f0f0;
+}
+
+/* ▼ テーブル列幅調整 */
+.task-table th:nth-child(1),
+.task-table td:nth-child(1) {
+    width: 25%;   /* タスク名 */
+}
+
+.task-table th:nth-child(2),
+.task-table td:nth-child(2) {
+    width: 17%;   /* 日付 */
+}
+
+.task-table th:nth-child(3),
+.task-table td:nth-child(3) {
+    width: 6%;    /* 重要 */
+}
+
+.task-table th:nth-child(4),
+.task-table td:nth-child(4) {
+    width: 12%;   /* 状況 */
+}
+
+.task-table th:nth-child(5),
+.task-table td:nth-child(5) {
+    width: 20%;   /* メモ */
+}
+
+.task-table th:nth-child(6),
+.task-table td:nth-child(6) {
+    width: 7%;    /* 追加予定 */
+}
+
+.task-table th:nth-child(7),
+.task-table td:nth-child(7) {
+    width: 9%;    /* 完了 / 削除ボタン */
 }
