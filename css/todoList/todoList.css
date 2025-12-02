@@ -23,7 +23,7 @@ body {
     margin-bottom: 20px;
     flex-wrap: wrap;
 }
-.task-Name{
+.task-Name {
     width: 500px;
 }
 
@@ -76,6 +76,11 @@ body {
 .task-table td {
     border: 1px solid #ddd;
     padding: 8px;
+
+    /* 折り返し対応 */
+    white-space: normal;       /* 折り返しを許可 */
+    word-wrap: break-word;     /* 単語単位でも折り返す */
+    overflow-wrap: break-word; /* モダンブラウザ用 */
 }
 
 .task-table th {
@@ -90,30 +95,66 @@ body {
 
 .task-table th:nth-child(2),
 .task-table td:nth-child(2) {
-    width: 17%;   /* 日付 */
+    width: 10%;   /* 登録日～期限 */
 }
 
 .task-table th:nth-child(3),
 .task-table td:nth-child(3) {
-    width: 6%;    /* 重要 */
+    width: 6%;    /* 期日残り日数 */
 }
 
 .task-table th:nth-child(4),
 .task-table td:nth-child(4) {
-    width: 12%;   /* 状況 */
+    width: 6%;   /* 重要度 */
 }
 
 .task-table th:nth-child(5),
 .task-table td:nth-child(5) {
-    width: 20%;   /* メモ */
+    width: 7%;   /* 作業状況 */
 }
 
 .task-table th:nth-child(6),
 .task-table td:nth-child(6) {
-    width: 7%;    /* 追加予定 */
+    width: 20%;    /* 備考 */
 }
 
 .task-table th:nth-child(7),
 .task-table td:nth-child(7) {
+    width: 9%;    /* 備考追加 */
+}
+
+.task-table th:nth-child(8),
+.task-table td:nth-child(8) {
     width: 9%;    /* 完了 / 削除ボタン */
+}
+
+.remarks-list {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+/* ▼ 残り日数計算 */
+/* 残り6日以上（通常） */
+.due-normal {
+    color: inherit;
+}
+
+/* 残り5日以内（黄色） */
+.due-warning {
+    color: #d4b300; /* 黄色系 */
+    font-weight: bold;
+}
+
+/* 残り3日以内（赤） */
+.due-danger {
+    color: #d10000; /* 赤 */
+    font-weight: bold;
+}
+
+/* 期限超過（赤＋下線） */
+.due-over {
+    color: #d10000;
+    font-weight: bold;
+    text-decoration: underline;
 }
