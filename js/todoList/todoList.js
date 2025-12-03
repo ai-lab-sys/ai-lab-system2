@@ -65,6 +65,40 @@ function loadTasks() {
 }
 
 // ---------------------------
+// タスク配列にフィルター適用
+// ---------------------------
+document.getElementById("sortExecBtn").addEventListener("click", () => {
+    const resetChecked = document.getElementById("resetCheck").checked;
+
+    if (resetChecked) {
+        // 初期化チェックON → 全件表示、他の制御は無効化
+        renderTables();
+        return;
+    }
+
+    const deadlineVal = document.getElementById("deadlineSelect").value;
+    const importantVal = document.querySelector('input[name="importantRadio"]:checked').value === "true";
+
+    // フィルタリング
+    let filteredTasks = [...tasks]; // コピー
+
+    if (deadlineVal) {
+        const today = new Date();
+        filteredTasks = filteredTasks.filter(t => {
+            const deadlineDate = new Date(t.deadline);
+            const diffDays = Math.floor((deadlineDate - today) / (1000 * 60 * 60 * 24));
+            return diffDays >= 0 && diffDays <= Number(deadlineVal);
+        });
+    }
+
+    if (importantVal) {
+        filteredTasks = filteredTasks.filter(t => t.important === true);
+    }
+
+    renderTables(filteredTasks);
+});
+
+// ---------------------------
 // タスク追加
 // ---------------------------
 document.getElementById("addTaskBtn").addEventListener("click", () => {
@@ -121,10 +155,10 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 });
 
 // ---------------------------
-// テーブル描画
-// 備考：各行にチェックボックスを表示。削除ボタンは備考リストの一番下に1つだけ。
+// テーブル描画（ソート対応版）
+// taskList を指定しなければ従来通り tasks を描画
 // ---------------------------
-function renderTables() {
+function renderTables(taskList = tasks) {
     const workingBody = document.getElementById("workingBody");
     const doneBody = document.getElementById("doneBody");
 
@@ -134,7 +168,7 @@ function renderTables() {
     const today = new Date();
     const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-    tasks.forEach(task => {
+    taskList.forEach(task => {
 
         // 日付表示（登録日と期限が同じなら省略）
         let dateDisplay = (task.registerDate === task.deadline) 
@@ -160,7 +194,7 @@ function renderTables() {
 
         const row = document.createElement("tr");
 
-        // 備考リストの HTML を作る（チェックボックス付き）
+        // 備考リスト HTML
         const remarksHtml = task.remarks.map((r, i) => {
             const checked = r.done ? "checked" : "";
             return `
@@ -173,11 +207,14 @@ function renderTables() {
             `;
         }).join("");
 
+        // 一括削除ボタン（備考があるときだけ）
         const deleteSelectedBtnHtml = (task.remarks.length > 0)
-            ? `<div class="remark-delete-area" style="text-align: right;"><button class="deleteSelectedRemarksBtn" data-taskid="${task.id}">備考削除</button></div>`
+            ? `<div class="remark-delete-area" style="text-align: right;">
+                    <button class="deleteSelectedRemarksBtn" data-taskid="${task.id}">備考削除</button>
+               </div>`
             : "";
 
-        // 作業中タスク行
+        // ------- 作業中タスク -------
         if (task.status !== "done") {
             row.innerHTML = `
                 <td>${escapeHtml(task.name)}</td>
@@ -195,7 +232,7 @@ function renderTables() {
                     ${deleteSelectedBtnHtml}
                 </td>
                 <td>
-                    <button class="toggleRemarkInputBtn" style="text-align: center;" data-id="${task.id}">備考追加</button>
+                    <button class="toggleRemarkInputBtn" data-id="${task.id}">備考追加</button>
                     <div class="remarkInputArea" id="remarkArea-${task.id}" style="display:none;">
                         <input type="text" class="remarkInput" data-id="${task.id}" placeholder="追加内容">
                         <button class="addRemarkBtn" data-id="${task.id}">追加</button>
@@ -207,8 +244,9 @@ function renderTables() {
                 </td>
             `;
             workingBody.appendChild(row);
-        } 
-        // 完了タスク行
+        }
+
+        // ------- 完了タスク -------
         else {
             row.innerHTML = `
                 <td>${escapeHtml(task.name)}</td>
@@ -229,10 +267,10 @@ function renderTables() {
     });
 
     // ---------------------------
-    // 以下、イベント設定（既存コードをそのまま利用）
+    // 以下、イベント設定
     // ---------------------------
 
-    // 作業状況変更
+    // 状態変更
     document.querySelectorAll(".statusSel").forEach(sel => {
         sel.addEventListener("change", () => {
             const t = tasks.find(x => x.id === Number(sel.dataset.id));
@@ -242,7 +280,7 @@ function renderTables() {
         });
     });
 
-    // 完了ボタン
+    // 完了
     document.querySelectorAll(".doneBtn").forEach(btn => {
         btn.addEventListener("click", () => {
             const t = tasks.find(x => x.id === Number(btn.dataset.id));
@@ -263,7 +301,7 @@ function renderTables() {
         });
     });
 
-    // 備考入力欄の表示 / 非表示
+    // 備考入力表示 ON/OFF
     document.querySelectorAll(".toggleRemarkInputBtn").forEach(btn => {
         btn.addEventListener("click", () => {
             const area = document.getElementById(`remarkArea-${btn.dataset.id}`);
@@ -292,14 +330,14 @@ function renderTables() {
             const taskId = Number(chk.dataset.taskid);
             const index = Number(chk.dataset.index);
             const t = tasks.find(x => x.id === taskId);
-            if (!t) return;
-            if (!t.remarks[index]) return;
+            if (!t || !t.remarks[index]) return;
+
             t.remarks[index].done = chk.checked;
             saveTasks();
         });
     });
 
-    // 選択した備考を一括削除
+    // 備考一括削除
     document.querySelectorAll(".deleteSelectedRemarksBtn").forEach(btn => {
         btn.addEventListener("click", () => {
             const taskId = Number(btn.dataset.taskid);
@@ -328,6 +366,7 @@ function renderTables() {
         });
     });
 }
+
 
 // ---------------------------
 // ユーティリティ

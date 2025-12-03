@@ -28,11 +28,36 @@
         <button id="addTaskBtn">追加</button>
     </div>
 
-    <!-- ▼ タブ -->
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="working">作業中タスク</button>
-        <button class="tab-btn" data-tab="done">完了タスク</button>
+    <!-- ▼ タブとソート -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="working">作業中タスク</button>
+            <button class="tab-btn" data-tab="done">完了タスク</button>
+        </div>
+
+        <div class="sort-area">
+            <!-- 期日 -->
+            <label for="deadlineSelect">期日:</label>
+            <select id="deadlineSelect">
+                <option value="">指定なし</option>
+                <option value="5">5日以内</option>
+                <option value="3">3日以内</option>
+            </select>
+
+            <!-- 重要度 -->
+            <label>重要度:</label>
+            <label><input type="radio" name="importantRadio" value="true" checked>有</label>
+            <label><input type="radio" name="importantRadio" value="false">無</label>
+
+            <!-- 初期化 -->
+            <label><input type="checkbox" id="resetCheck">初期化</label>
+
+            <!-- 実行ボタン -->
+            <button id="sortExecBtn">検索</button>
+        </div>
     </div>
+
+
 
     <!-- ▼ 作業中タスク -->
     <div id="working" class="tab-content active">

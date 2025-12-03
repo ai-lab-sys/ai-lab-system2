@@ -49,6 +49,7 @@ body {
     border: 1px solid #aaa;
     background: #eee;
     cursor: pointer;
+    width: 200px;
 }
 
 .tab-btn.active {
@@ -96,16 +97,25 @@ body {
 .task-table th:nth-child(2),
 .task-table td:nth-child(2) {
     width: 10%;   /* 登録日～期限 */
+    text-align: center;
 }
 
 .task-table th:nth-child(3),
 .task-table td:nth-child(3) {
     width: 6%;    /* 期日残り日数 */
+    text-align: center;
 }
 
 .task-table th:nth-child(4),
 .task-table td:nth-child(4) {
     width: 6%;   /* 重要度 */
+    text-align: center;
+    
+}
+.task-table td:nth-child(4) {
+    color: red;
+    font-weight: bold;
+    text-decoration: underline;
 }
 
 .task-table th:nth-child(5),
@@ -121,11 +131,13 @@ body {
 .task-table th:nth-child(7),
 .task-table td:nth-child(7) {
     width: 9%;    /* 備考追加 */
+    text-align: center;
 }
 
 .task-table th:nth-child(8),
 .task-table td:nth-child(8) {
     width: 9%;    /* 完了 / 削除ボタン */
+    text-align: center;
 }
 
 .remarks-list {
@@ -157,4 +169,24 @@ body {
     color: #d10000;
     font-weight: bold;
     text-decoration: underline;
+}
+
+/*ソート機能*/
+.tabs-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.sort-area {
+    border: 1px solid #aaa;
+    padding: 10px 14px;
+    margin-bottom: 15px;
+    background: #fdfdfd;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-radius: 6px;
+    width: 28rem;
 }
