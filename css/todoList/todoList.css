@@ -5,6 +5,7 @@ body {
     background: #fff;
 }
 
+/* ▼ ヘッダー */
 .header {
     background: linear-gradient(135deg, #6a85b6, #bac8e0);
     color: #fff;
@@ -16,18 +17,27 @@ body {
     padding: 20px;
 }
 
-/* ▼ タスク入力フォーム */
+/* ▼ タスク入力フォーム（囲むデザイン追加） */
+.task-form-box {
+    border: 1px solid #bbb;
+    padding: 15px;
+    background: #fafafa;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
 .task-form {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
     flex-wrap: wrap;
 }
+
 .task-Name {
     width: 500px;
 }
 
-.task-form input, .task-form button {
+.task-form input,
+.task-form button {
     padding: 8px;
     font-size: 14px;
 }
@@ -37,24 +47,49 @@ body {
     align-items: center;
 }
 
+/* ▼ タブ全体 */
+.tabs-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 /* ▼ タブ */
 .tabs {
     display: flex;
-    gap: 4px;
-    margin-bottom: 12px;
+    gap: 0px; /* タブ同士をくっつける */
 }
 
 .tab-btn {
-    padding: 8px 14px;
+    padding: 10px 20px;
     border: 1px solid #aaa;
+    border-bottom: none; /* テーブルとつなげるために下線を消す */
     background: #eee;
     cursor: pointer;
-    width: 200px;
+    width: 23rem;
+    text-align: center;
 }
 
 .tab-btn.active {
     background: #fff;
-    border-bottom: 2px solid #333;
+    font-weight: bold;
+    border-bottom: 2px solid #fff; /* テーブルと一体化 */
+    border-top: 2px solid #333;
+}
+
+/* ▼ ソートエリア */
+.sort-area {
+    border: 1px solid #aaa;
+    padding: 10px 14px;
+    margin-bottom: 15px;
+    background: #fdfdfd;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-radius: 6px;
+    width: 28rem;
 }
 
 /* ▼ タブ内容 */
@@ -71,47 +106,46 @@ body {
     width: 100%;
     border-collapse: collapse;
     background: #fff;
+    border-top: 2px solid #333; /* タブと一体化させる */
 }
 
 .task-table th,
 .task-table td {
     border: 1px solid #ddd;
     padding: 8px;
-
-    /* 折り返し対応 */
-    white-space: normal;       /* 折り返しを許可 */
-    word-wrap: break-word;     /* 単語単位でも折り返す */
-    overflow-wrap: break-word; /* モダンブラウザ用 */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .task-table th {
     background: #f0f0f0;
 }
 
-/* ▼ テーブル列幅調整 */
+/* ▼ 列幅調整 */
 .task-table th:nth-child(1),
 .task-table td:nth-child(1) {
-    width: 25%;   /* タスク名 */
+    width: 25%;
 }
 
 .task-table th:nth-child(2),
 .task-table td:nth-child(2) {
-    width: 10%;   /* 登録日～期限 */
+    width: 10%;
     text-align: center;
 }
 
 .task-table th:nth-child(3),
 .task-table td:nth-child(3) {
-    width: 6%;    /* 期日残り日数 */
+    width: 6%;
     text-align: center;
 }
 
 .task-table th:nth-child(4),
 .task-table td:nth-child(4) {
-    width: 6%;   /* 重要度 */
+    width: 6%;
     text-align: center;
-    
 }
+
 .task-table td:nth-child(4) {
     color: red;
     font-weight: bold;
@@ -120,23 +154,23 @@ body {
 
 .task-table th:nth-child(5),
 .task-table td:nth-child(5) {
-    width: 7%;   /* 作業状況 */
+    width: 7%;
 }
 
 .task-table th:nth-child(6),
 .task-table td:nth-child(6) {
-    width: 20%;    /* 備考 */
+    width: 20%;
 }
 
 .task-table th:nth-child(7),
 .task-table td:nth-child(7) {
-    width: 9%;    /* 備考追加 */
+    width: 9%;
     text-align: center;
 }
 
 .task-table th:nth-child(8),
 .task-table td:nth-child(8) {
-    width: 9%;    /* 完了 / 削除ボタン */
+    width: 9%;
     text-align: center;
 }
 
@@ -146,47 +180,23 @@ body {
     margin-left: 0;
 }
 
-/* ▼ 残り日数計算 */
-/* 残り6日以上（通常） */
+/* ▼ 残り日数色 */
 .due-normal {
     color: inherit;
 }
 
-/* 残り5日以内（黄色） */
 .due-warning {
-    color: #d4b300; /* 黄色系 */
+    color: #d4b300;
     font-weight: bold;
 }
 
-/* 残り3日以内（赤） */
 .due-danger {
-    color: #d10000; /* 赤 */
+    color: #d10000;
     font-weight: bold;
 }
 
-/* 期限超過（赤＋下線） */
 .due-over {
     color: #d10000;
     font-weight: bold;
     text-decoration: underline;
-}
-
-/*ソート機能*/
-.tabs-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-.sort-area {
-    border: 1px solid #aaa;
-    padding: 10px 14px;
-    margin-bottom: 15px;
-    background: #fdfdfd;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border-radius: 6px;
-    width: 28rem;
 }
