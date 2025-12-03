@@ -68,7 +68,7 @@ body {
     border-bottom: none; /* テーブルとつなげるために下線を消す */
     background: #eee;
     cursor: pointer;
-    width: 23rem;
+    width: 21rem;
     text-align: center;
 }
 
@@ -89,7 +89,7 @@ body {
     align-items: center;
     gap: 15px;
     border-radius: 6px;
-    width: 28rem;
+    width: 30rem;
 }
 
 /* ▼ タブ内容 */
