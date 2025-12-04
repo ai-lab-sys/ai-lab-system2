@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>やりたいこと</title>
+<link rel="stylesheet" href="../../css/wantlist/wantlist.css">
+</head>
+<body>
+  <div class="header">
+        <div><h2>やりたいこと</h2></div>
+  </div>
+    <div class="tabs" role="tablist" aria-label="カテゴリ選択">
+      <div class="tab active" data-tab="this_year" role="tab" aria-selected="true">今年やりたいこと</div>
+      <div class="tab" data-tab="life" role="tab" aria-selected="false">人生でやりたいこと</div>
+    </div>
+  
+
+  <main class="container">
+    <div id="grid" class="grid" aria-live="polite"></div>
+    <div id="empty" class="empty" style="display:none">
+      カードがまだありません。左下の＋から新しい「やりたいこと」を追加してください。
+    </div>
+  </main>
+
+  <!-- floating add button bottom-left -->
+  <button id="fab" class="fab" title="新しいやりたいことを追加">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <!-- Modal -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <header>
+        <div id="modalTitle" style="font-weight:700">新しいやりたいこと</div>
+        <button id="closeModal" class="btn" aria-label="閉じる" title="閉じる">
+          ✕
+        </button>
+      </header>
+      <div class="content">
+        <div class="row" style="gap:10px;">
+          <div style="flex:1">
+            <label for="titleInput">タイトル（必須）</label>
+            <input id="titleInput" type="text" placeholder="例：富士山に登る" />
+          </div>
+          <div style="width:170px">
+            <label for="categorySelect">カテゴリ</label>
+            <select id="categorySelect">
+              <option value="this_year">今年やりたいこと</option>
+              <option value="life">人生でやりたいこと</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label>カードの色</label>
+          <div class="swatches" id="swatches">
+            <!-- swatches injected by JS -->
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
+            <label for="imageInput">写真（任意）</label>
+            <input id="imageInput" type="file" accept="image/*" />
+          </div>
+          <div style="width:200px;">
+            <label for="imagePreview">プレビュー</label>
+            <div id="imagePreview" style="height:64px; border-radius:8px; overflow:hidden; border:1px solid #eef6ff; background:#fbfdff; display:flex; align-items:center; justify-content:center;">
+              <div style="font-size:12px;color:#99a">画像なし</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label for="memoInput">メモ</label>
+          <textarea id="memoInput" placeholder="詳細やリンク、補足を書いてください"></textarea>
+        </div>
+
+        <div class="row">
+          <label style="display:flex;align-items:center;gap:8px;">
+            <input id="doneInput" type="checkbox" /> &nbsp;既に達成済みとして保存する
+          </label>
+        </div>
+
+      </div>
+
+      <footer>
+        <button id="deleteBtn" class="secondary" style="display:none;color:#b33;">削除</button>
+        <button id="cancelBtn" class="secondary">キャンセル</button>
+        <button id="saveBtn" class="primary">保存</button>
+      </footer>
+    </div>
+  </div>  
+</body>
+<script src="../../js/wantlist/wantlist.js"></script>
+</html>
