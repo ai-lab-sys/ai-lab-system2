@@ -3,6 +3,7 @@
 // ---------------------------
 document.addEventListener("DOMContentLoaded", () => {
     const todayStr = new Date().toISOString().split("T")[0];
+    document.getElementById("fromDate").value = todayStr;
     document.getElementById("deadline").value = todayStr;
 
     loadTasks();
@@ -21,16 +22,18 @@ function saveTasks() {
 
 // ---------------------------
 // ローカルストレージ読み込み
-// 互換性対応：memo（文字列）や旧形式remarksを新形式に変換
-// remarks は [{text, done}, ...] の配列になる
 // ---------------------------
 function loadTasks() {
     const json = localStorage.getItem("todoTasks");
+
     if (json) {
         tasks = JSON.parse(json);
 
         tasks.forEach(t => {
             const newRemarks = [];
+
+            // ★ fromDate補完（追加）
+            if (!t.fromDate) t.fromDate = t.registerDate;
 
             // 古い memo を先頭の備考に統合
             if (t.memo) {
@@ -38,16 +41,19 @@ function loadTasks() {
                 t.memo = "";
             }
 
-            // 旧式 remarks の変換（文字列配列または既にオブジェクト配列）
-            if (!Array.isArray(t.remarks)) t.remarks = [];
-                t.remarks.forEach(r => {
-                    if (r && typeof r === "object" && "text" in r) {
-                        newRemarks.push({ text: r.text, done: !!r.done });
-                    } else if (r) {
-                        newRemarks.push({ text: r, done: false });
-                    }
-                });
-            
+            // remarks 初期化（バグ修正）
+            if (!Array.isArray(t.remarks)) {
+                t.remarks = [];
+            }
+
+            // 旧式 remarks の変換
+            t.remarks.forEach(r => {
+                if (r && typeof r === "object" && "text" in r) {
+                    newRemarks.push({ text: r.text, done: !!r.done });
+                } else if (r) {
+                    newRemarks.push({ text: r, done: false });
+                }
+            });
 
             t.remarks = newRemarks;
 
@@ -71,16 +77,14 @@ document.getElementById("sortExecBtn").addEventListener("click", () => {
     const resetChecked = document.getElementById("resetCheck").checked;
 
     if (resetChecked) {
-        // 初期化チェックON → 全件表示、他の制御は無効化
         renderTables();
         return;
     }
 
     const deadlineVal = document.getElementById("deadlineSelect").value;
-    const importantVal = document.querySelector('input[name="importantRadio"]:checked').value === "true";
+    const importantVal = document.querySelector('input[name="importantRadio"]:checked').value;
 
-    // フィルタリング
-    let filteredTasks = [...tasks]; // コピー
+    let filteredTasks = [...tasks];
 
     if (deadlineVal) {
         const today = new Date();
@@ -91,7 +95,7 @@ document.getElementById("sortExecBtn").addEventListener("click", () => {
         });
     }
 
-    if (importantVal) {
+    if (importantVal === "true") {
         filteredTasks = filteredTasks.filter(t => t.important === true);
     }
 
@@ -103,12 +107,19 @@ document.getElementById("sortExecBtn").addEventListener("click", () => {
 // ---------------------------
 document.getElementById("addTaskBtn").addEventListener("click", () => {
     const name = document.getElementById("taskName").value.trim();
+    const fromDate = document.getElementById("fromDate").value; // ★追加
     const deadline = document.getElementById("deadline").value;
     const isImportant = document.getElementById("isImportant").checked;
     const memo = document.getElementById("taskMemo").value.trim();
 
     if (!name) {
         alert("タスク名を入力してください");
+        return;
+    }
+
+    // ★ from > to チェック（追加）
+    if (fromDate > deadline) {
+        alert("開始日は期限より前にしてください");
         return;
     }
 
@@ -121,9 +132,10 @@ document.getElementById("addTaskBtn").addEventListener("click", () => {
         id: taskId++,
         name,
         deadline,
+        fromDate, // ★追加
         registerDate: today,
         important: isImportant,
-        memo: "",               // 互換性のため空（備考は remarks に集約）
+        memo: "",
         remarks: initialRemarks,
         status: "not_started"
     };
@@ -132,12 +144,13 @@ document.getElementById("addTaskBtn").addEventListener("click", () => {
     saveTasks();
     renderTables();
 
+    // 入力リセット
     document.getElementById("taskName").value = "";
     document.getElementById("taskMemo").value = "";
     document.getElementById("isImportant").checked = false;
     // 登録後、期限を今日に戻す
+    document.getElementById("fromDate").value = new Date().toISOString().split("T")[0];
     document.getElementById("deadline").value = new Date().toISOString().split("T")[0];
-
 });
 
 // ---------------------------
@@ -170,14 +183,22 @@ function renderTables(taskList = tasks) {
 
     taskList.forEach(task => {
 
-        // 日付表示（登録日と期限が同じなら省略）
-        let dateDisplay = (task.registerDate === task.deadline) 
-            ? task.deadline 
-            : `${task.registerDate} ～ ${task.deadline}`;
+        // ★ 念のためフォールバック（安全対策）
+        const fromDate = task.fromDate || task.registerDate;
+        const deadline = task.deadline || fromDate;
+
+        // 日付表示
+        let dateDisplay = (fromDate === deadline)
+            ? deadline
+            : `${fromDate} ～ ${deadline}`;
 
         // 期日残り日数（日付だけで比較）
-        const deadlineDate = new Date(task.deadline);
-        const deadlineDateOnly = new Date(deadlineDate.getFullYear(), deadlineDate.getMonth(), deadlineDate.getDate());
+        const deadlineDate = new Date(deadline);
+        const deadlineDateOnly = new Date(
+            deadlineDate.getFullYear(),
+            deadlineDate.getMonth(),
+            deadlineDate.getDate()
+        );
 
         let diffDays = Math.floor((deadlineDateOnly - todayDateOnly) / (1000 * 60 * 60 * 24));
         let dueClass = "due-normal";
@@ -195,7 +216,7 @@ function renderTables(taskList = tasks) {
         const row = document.createElement("tr");
 
         // 備考リスト HTML
-        const remarksHtml = task.remarks.map((r, i) => {
+        const remarksHtml = (task.remarks || []).map((r, i) => {
             const checked = r.done ? "checked" : "";
             return `
                 <li>
@@ -207,8 +228,8 @@ function renderTables(taskList = tasks) {
             `;
         }).join("");
 
-        // 一括削除ボタン（備考があるときだけ）
-        const deleteSelectedBtnHtml = (task.remarks.length > 0)
+        // 一括削除ボタン
+        const deleteSelectedBtnHtml = (task.remarks && task.remarks.length > 0)
             ? `<div class="remark-delete-area" style="text-align: right;">
                     <button class="deleteSelectedRemarksBtn" data-taskid="${task.id}">備考削除</button>
                </div>`
@@ -274,6 +295,7 @@ function renderTables(taskList = tasks) {
     document.querySelectorAll(".statusSel").forEach(sel => {
         sel.addEventListener("change", () => {
             const t = tasks.find(x => x.id === Number(sel.dataset.id));
+            if (!t) return;
             t.status = sel.value;
             saveTasks();
             renderTables();
@@ -284,17 +306,19 @@ function renderTables(taskList = tasks) {
     document.querySelectorAll(".doneBtn").forEach(btn => {
         btn.addEventListener("click", () => {
             const t = tasks.find(x => x.id === Number(btn.dataset.id));
+            if (!t) return;
             t.status = "done";
             saveTasks();
             renderTables();
         });
     });
 
-    // タスク削除
+        // タスク削除
     document.querySelectorAll(".deleteBtn").forEach(btn => {
         btn.addEventListener("click", () => {
             const id = Number(btn.dataset.id);
             if (!confirm("本当にこのタスクを削除しますか？")) return;
+
             tasks = tasks.filter(x => x.id !== id);
             saveTasks();
             renderTables();
@@ -305,6 +329,8 @@ function renderTables(taskList = tasks) {
     document.querySelectorAll(".toggleRemarkInputBtn").forEach(btn => {
         btn.addEventListener("click", () => {
             const area = document.getElementById(`remarkArea-${btn.dataset.id}`);
+            if (!area) return; // ★ 安全対策
+
             area.style.display = (area.style.display === "none") ? "block" : "none";
         });
     });
@@ -313,12 +339,21 @@ function renderTables(taskList = tasks) {
     document.querySelectorAll(".addRemarkBtn").forEach(btn => {
         btn.addEventListener("click", () => {
             const t = tasks.find(x => x.id === Number(btn.dataset.id));
+            if (!t) return; // ★ 追加
+
             const input = document.querySelector(`.remarkInput[data-id="${t.id}"]`);
+            if (!input) return; // ★ 追加
+
             const text = input.value.trim();
             if (!text) return;
 
+            if (!Array.isArray(t.remarks)) {
+                t.remarks = []; // ★ 念のため
+            }
+
             t.remarks.push({ text: text, done: false });
             input.value = "";
+
             saveTasks();
             renderTables();
         });
@@ -329,8 +364,9 @@ function renderTables(taskList = tasks) {
         chk.addEventListener("change", () => {
             const taskId = Number(chk.dataset.taskid);
             const index = Number(chk.dataset.index);
+
             const t = tasks.find(x => x.id === taskId);
-            if (!t || !t.remarks[index]) return;
+            if (!t || !Array.isArray(t.remarks) || !t.remarks[index]) return; // ★ 強化
 
             t.remarks[index].done = chk.checked;
             saveTasks();
@@ -342,9 +378,12 @@ function renderTables(taskList = tasks) {
         btn.addEventListener("click", () => {
             const taskId = Number(btn.dataset.taskid);
             const t = tasks.find(x => x.id === taskId);
-            if (!t) return;
+            if (!t || !Array.isArray(t.remarks)) return; // ★ 強化
 
-            const checks = Array.from(document.querySelectorAll(`.remarkChk[data-taskid="${taskId}"]`));
+            const checks = Array.from(
+                document.querySelectorAll(`.remarkChk[data-taskid="${taskId}"]`)
+            );
+
             const deleteIndexes = checks
                 .map(c => ({ idx: Number(c.dataset.index), checked: c.checked }))
                 .filter(x => x.checked)
@@ -357,7 +396,8 @@ function renderTables(taskList = tasks) {
 
             if (!confirm("選択した備考を削除しますか？")) return;
 
-            deleteIndexes.sort((a,b) => b - a).forEach(i => {
+            // 後ろから削除（インデックスずれ防止）
+            deleteIndexes.sort((a, b) => b - a).forEach(i => {
                 t.remarks.splice(i, 1);
             });
 
